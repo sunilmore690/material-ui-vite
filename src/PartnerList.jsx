@@ -15,8 +15,8 @@ function PartnerList({ partners = [] }) {
   return (
     <Grid container spacing={2}>
       {partners.map((partner) => (
-        <Grid item xs={6} key={partner._id}>
-          <Card>
+        <Grid item xs={5} key={partner._id}>
+          <Card >
             <CardMedia
               component="img"
               height="50"
@@ -30,12 +30,18 @@ function PartnerList({ partners = [] }) {
               alt="Paella dish"
             />
             <CardContent>
-              <Typography gutterBottom variant="h6" component="div">
-                {partner.name}{" "}
+              <Typography gutterBottom variant="h5" component="paragraph">
+                {partner.name}
                 {partner.verified ? (
                   <TaskAltIcon color="success"></TaskAltIcon>
                 ) : null}
               </Typography>
+              <Typography component={"paragraph"}>
+                  ESTD {partner.estd}
+              </Typography> 
+              <Typography component={"div"}>
+                {partner.fullAddress}
+              </Typography> 
               <Typography component={"paragraph"}>
                 <b style={{ fontWeight: 30 }}>About Us </b>:{" "}
                 {partner.description}

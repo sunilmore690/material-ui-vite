@@ -32,15 +32,14 @@ export default function App() {
   function handlePageChange(e,n){
     console.log('page',n);
     setPage(n);
-    handleSearch()
   }
   function handleSearch() {
     let queryParms = {};
     for (const field in partnerSearchQuery) {
       if (partnerSearchQuery[field]) {
         if (field === "experience") {
-          queryParms[`q[experience[min]]`] = partnerSearchQuery[field][0];
-          queryParms[`q[experience[max]]`] = partnerSearchQuery[field][1];
+          queryParms[`q[experience][min]`] = partnerSearchQuery[field][0];
+          queryParms[`q[experience][max]`] = partnerSearchQuery[field][1];
         } else {
           queryParms[`q[${field}]`] = partnerSearchQuery[field];
         }
@@ -56,13 +55,18 @@ export default function App() {
         setNoOfPages(Math.ceil(metadata[0].total/pageLimit))
       });
   }
+  useEffect(()=>{
+    handleSearch()
+  },[page])
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <Grid container spacing={2}>
-        <Grid item xs={3} >
-          <PartnerSearchForm handleSearch={handleSearch} handleChange={handleChange}  handleClear={handleClear} partnerSearchQuery={partnerSearchQuery}/>
+    <Box sx={{ flexGrow: 1 ,marginTop:'20px'}}>
+      <Grid container spacing={1}>
+        <Grid item sm={3} >
+          <PartnerSearchForm handleSearch={()=>{
+            setPage(1);
+          }} handleChange={handleChange}  handleClear={handleClear} partnerSearchQuery={partnerSearchQuery}/>
         </Grid>
-        <Grid item xs={8}>
+        <Grid item sm={8}>
           <PartnerList partners={partners}/>
           <Container maxWidth='sm' style={{paddingTop:'20px'}}>
             <Pagination count={noOfPages} page={page} onChange={handlePageChange} />
