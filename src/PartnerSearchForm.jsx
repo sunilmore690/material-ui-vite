@@ -99,7 +99,7 @@ const PartnerSearchForm = ({partnerSearchQuery,handleChange,handleClear,handleSe
         </FormControl>
         <Grid container spacing={2}>
           <Grid item sm={5}>
-            <Button variant="contained" onClick={handleSearch}>
+            <Button variant="contained" onClick={()=>handleSearch()}>
               Search
             </Button>
           </Grid>

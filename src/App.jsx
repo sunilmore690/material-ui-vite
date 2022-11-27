@@ -32,8 +32,10 @@ export default function App() {
   function handlePageChange(e,n){
     console.log('page',n);
     setPage(n);
+    handleSearch(n);
   }
-  function handleSearch() {
+  function handleSearch(currentPage) {
+    console.log('currentPage',currentPage)
     let queryParms = {};
     for (const field in partnerSearchQuery) {
       if (partnerSearchQuery[field]) {
@@ -45,7 +47,7 @@ export default function App() {
         }
       }
     }
-    queryParms = new URLSearchParams({...queryParms,per:pageLimit,page});
+    queryParms = new URLSearchParams({...queryParms,per:pageLimit,page:currentPage});
     fetcher(API_ENDPOINT + "/partners/search?" + queryParms)
       .then((res) => res.json())
       .then(({ data, metadata }) => {
@@ -55,16 +57,12 @@ export default function App() {
         setNoOfPages(Math.ceil(metadata[0].total/pageLimit))
       });
   }
-  useEffect(()=>{
-    handleSearch()
-  },[page])
+  
   return (
     <Box sx={{ flexGrow: 1 ,marginTop:'20px'}}>
       <Grid container spacing={1}>
         <Grid item sm={3} >
-          <PartnerSearchForm handleSearch={()=>{
-            setPage(1);
-          }} handleChange={handleChange}  handleClear={handleClear} partnerSearchQuery={partnerSearchQuery}/>
+          <PartnerSearchForm handleSearch={e=>handlePageChange(null,1)} handleChange={handleChange}  handleClear={handleClear} partnerSearchQuery={partnerSearchQuery}/>
         </Grid>
         <Grid item sm={8}>
           <PartnerList partners={partners}/>
