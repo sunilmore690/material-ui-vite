@@ -16,17 +16,30 @@ import { Container } from "@mui/system";
 import React, { useEffect, useState } from "react";
 import fetcher, { API_ENDPOINT } from "./constant";
 
-const PartnerSearchForm = ({partnerSearchQuery,handleChange,handleClear,handleSearch}) => {
-  
-  const [services, setServices] = useState([]);
-  function getServices() {
-    fetcher(API_ENDPOINT + "/services")
+const PartnerSearchForm = ({
+  chargingStationSearchQuery,
+  handleChange,
+  handleClear,
+  handleSearch,
+}) => {
+  const [states, setStates] = useState([]);
+  const [cities, setCities] = useState([]);
+  function getStates() {
+    fetcher(API_ENDPOINT + "/states")
       .then((res) => res.json())
-      .then(services=>setServices(services));
+      .then((states) => setStates(states));
+  }
+  function getCities() {
+    fetcher(API_ENDPOINT + "/cities?state=" + state)
+      .then((res) => res.json())
+      .then((cities) => setCities(cities));
   }
   useEffect(() => {
-    getServices();
+    getStates();
   }, []);
+  useEffect(() => {
+    getCities();
+  }, [chargingStationSearchQuery.state]);
   return (
     <Card sx={{ minWidth: 275, margin: "10px" }}>
       <Box
@@ -39,67 +52,49 @@ const PartnerSearchForm = ({partnerSearchQuery,handleChange,handleClear,handleSe
         }}
       >
         <FormControl variant="standard">
-          <InputLabel id="demo-simple-select-standard-label">
-            Service
-          </InputLabel>
-          <Select
-            labelId="demo-simple-select-standard-label"
-            value={partnerSearchQuery["serviceName"]}
-            onChange={handleChange("serviceName")}
-            label="Service"
-          >
-            <MenuItem value="">
-              <em>None</em>
-            </MenuItem>
-            {services.map((service) => (
-              <MenuItem value={service.name}>{service.name}</MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <FormControl variant="standard">
           <InputLabel htmlFor="component-simple">Location</InputLabel>
           <Input
             id="component-simple"
-            value={partnerSearchQuery["fullAddress"]}
-            onChange={handleChange("fullAddress")}
+            value={chargingStationSearchQuery["search"]}
+            onChange={handleChange("search")}
             placeholder="Eg. Pune"
           />
         </FormControl>
         <FormControl variant="standard">
-          {/* <Box style={{ paddingTop: "20px" }}>
-            <Input
-              id="component-simple"
-              value={partnerSearchQuery["experience[min]"]}
-              onChange={handleChange("experience[min]")}
-              type="number"
-              size="small"
-              placeholder="Min"
-            />
-            <Input
-              id="component-simple"
-              value={partnerSearchQuery["experience[max]"]}
-              onChange={handleChange("experience[max]")}
-              type="number"
-              size="small"
-              placeholder="Max"
-            />
-          </Box> */}
-          <InputLabel htmlFor="component-simple">Experience</InputLabel>
-          <Stack spacing={2} alignItems="center" style={{ marginTop: "80px" }}>
-            <Slider
-              getAriaLabel={() => "Experience"}
-              value={partnerSearchQuery["experience"]}
-              onChange={handleChange("experience")}
-              valueLabelDisplay="on"
-              disableSwap
-              max={30}
-              getAriaValueText={(v) => v}
-            />
-          </Stack>
+          <InputLabel id="demo-simple-select-standard-label">State</InputLabel>
+          <Select
+            labelId="demo-simple-select-standard-label"
+            value={chargingStationSearchQuery["state"]}
+            onChange={handleChange("state")}
+            label="State"
+          >
+            <MenuItem value="">
+              <em>None</em>
+            </MenuItem>
+            {states.map((state) => (
+              <MenuItem value={state.name}>{state.name}</MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <FormControl variant="standard">
+          <InputLabel id="demo-simple-select-standard-label">City</InputLabel>
+          <Select
+            labelId="demo-simple-select-standard-label"
+            value={chargingStationSearchQuery["city"]}
+            onChange={handleChange("city")}
+            label="City"
+          >
+            <MenuItem value="">
+              <em>None</em>
+            </MenuItem>
+            {cities.map((city) => (
+              <MenuItem value={city.name}>{city.name}</MenuItem>
+            ))}
+          </Select>
         </FormControl>
         <Grid container spacing={2}>
           <Grid item sm={5}>
-            <Button variant="contained" onClick={()=>handleSearch()}>
+            <Button variant="contained" onClick={() => handleSearch()}>
               Search
             </Button>
           </Grid>

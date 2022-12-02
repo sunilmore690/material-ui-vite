@@ -5,70 +5,72 @@ import Box from "@mui/material/Box";
 import ProTip from "./ProTip";
 import Copyright from "./Copyright";
 import PartnerSearchForm from "./PartnerSearchForm";
-import { Grid ,Pagination} from "@mui/material";
+import { Grid, Pagination } from "@mui/material";
 import PartnerList from "./PartnerList";
 import fetcher, { API_ENDPOINT } from "./constant";
 export default function App() {
-  const [partners,setPartners] = React.useState();
-  const [partnerSearchQuery, setPartnerSearchQuery] = useState({
-    experience: [1, 5]
+  const [chargingstations, setChargingStations] = React.useState();
+  const [chargingStationSearchQuery, setchargingStationSearchQuery] = useState({
+    experience: [1, 5],
   });
-  const [page,setPage] = React.useState(1);
-  const [pageLimit,setPageLimit] = React.useState(10);
-  const [noOfPages,setNoOfPages] = React.useState(0);
-  
+  const [page, setPage] = React.useState(1);
+  const [pageLimit, setPageLimit] = React.useState(10);
+  const [noOfPages, setNoOfPages] = React.useState(0);
+
   function handleChange(field) {
     return (e) => {
-      setPartnerSearchQuery({ ...partnerSearchQuery, [field]: e.target.value });
+      setchargingStationSearchQuery({
+        ...chargingStationSearchQuery,
+        [field]: e.target.value,
+      });
     };
   }
-  function handleClear({data,metadata}){
-    setPartnerSearchQuery({
-      experience: [1, 5],
-      fullAddress:'',
-      serviceName:''
-    })
+  function handleClear() {
+    setchargingStationSearchQuery({
+      state: "",
+      city: "",
+      search: "",
+    });
   }
-  function handlePageChange(e,n){
-    console.log('page',n);
+  function handlePageChange(e, n) {
+    console.log("page", n);
     setPage(n);
     handleSearch(n);
   }
   function handleSearch(currentPage) {
-    console.log('currentPage',currentPage)
+    // console.log("currentPage", currentPage);
     let queryParms = {};
-    for (const field in partnerSearchQuery) {
-      if (partnerSearchQuery[field]) {
-        if (field === "experience") {
-          queryParms[`q[experience][min]`] = partnerSearchQuery[field][0];
-          queryParms[`q[experience][max]`] = partnerSearchQuery[field][1];
-        } else {
-          queryParms[`q[${field}]`] = partnerSearchQuery[field];
-        }
-      }
-    }
-    queryParms = new URLSearchParams({...queryParms,per:pageLimit,page:currentPage});
-    fetcher(API_ENDPOINT + "/partners/search?" + queryParms)
+    queryParms = new URLSearchParams({ ...chargingStationSearchQuery });
+    fetcher(API_ENDPOINT + "/chargingstations/search?" + queryParms)
       .then((res) => res.json())
       .then(({ data, metadata }) => {
         console.log("data", data);
-        setPartners(data);
-        console.log("metadata", metadata);
-        setNoOfPages(Math.ceil(metadata[0].total/pageLimit))
+        setChargingStations(data);
+        // console.log("metadata", metadata);
+        // setNoOfPages(Math.ceil(metadata[0].total / pageLimit));
       });
   }
-  
+
   return (
-    <Box sx={{ flexGrow: 1 ,marginTop:'20px'}}>
+    <Box sx={{ flexGrow: 1, marginTop: "20px" }}>
       <Grid container spacing={1}>
-        <Grid item sm={3} >
-          <PartnerSearchForm handleSearch={e=>handlePageChange(null,1)} handleChange={handleChange}  handleClear={handleClear} partnerSearchQuery={partnerSearchQuery}/>
+        <Grid item sm={3}>
+          <PartnerSearchForm
+            handleSearch={(e) => handlePageChange(null, 1)}
+            handleChange={handleChange}
+            handleClear={handleClear}
+            chargingStationSearchQuery={chargingStationSearchQuery}
+          />
         </Grid>
         <Grid item sm={8}>
-          <PartnerList partners={partners}/>
-          <Container maxWidth='sm' style={{paddingTop:'20px'}}>
-            <Pagination count={noOfPages} page={page} onChange={handlePageChange} />
-          </Container>
+          <PartnerList chargingstations={chargingstations} />
+          {/* <Container maxWidth="sm" style={{ paddingTop: "20px" }}>
+            <Pagination
+              count={noOfPages}
+              page={page}
+              onChange={handlePageChange}
+            />
+          </Container> */}
         </Grid>
       </Grid>
     </Box>
